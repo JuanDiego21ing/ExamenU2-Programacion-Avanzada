@@ -4,58 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Memorama | Resident Evil</title>
-    <style>
-      body {
-        background-color: gray;
-        margin: 0;
-        padding: 0;
-        text-align: center;
-      }
-      canvas {
-        background-color: white;
-        display: block;
-        margin: 0 auto;
-        position: relative;
-      }
-      .btn-container {
-        position: absolute;
-        top: 550px;
-        left: 50%;
-        transform: translateX(-50%);
-        opacity: 1;
-        transition: opacity 1s;
-      }
-      button {
-        padding: 12px 24px;
-        font-size: 18px;
-        margin: 10px;
-        cursor: pointer;
-        background: linear-gradient(145deg, #333, #555);
-        color: #ff6464;
-        border: 2px solid #777;
-        border-radius: 6px;
-        box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.3),
-          inset 1px 1px 2px rgba(0, 0, 0, 0.5);
-        font-family: "Press Start 2P", cursive;
-        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.6);
-        transition: background 0.3s, transform 0.2s;
-      }
-      button:hover {
-        background: linear-gradient(145deg, #444, #666);
-        border-color: #999;
-      }
-      button:active {
-        transform: scale(0.95);
-      }
-      #timer {
-        font-family: "Courier New", monospace;
-        font-size: 36px;
-        color: #00ff00;
-        text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
-        margin-top: 10px;
-        letter-spacing: 2px;
-      }
-    </style>
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div style="position: relative">
@@ -66,132 +15,15 @@
     </div>
     <div id="timer"></div>
 
+    <img id="leftImage" src="img/jill.webp" alt="Left Image" />
+    <img id="rightImage" src="img/leon s.png" alt="Right Image" />
+
     <audio id="startAudio" src="sounds/residentsoundIntro.mp3"></audio>
     <audio id="secondAudio" src="sounds/musciaFondo.mp3"></audio>
     <audio id="thirdAudio" src="sounds/timeleft.mp3"></audio>
 
-    <script type="text/javascript">
-      const myCanvas = document.getElementById("myCanvas");
-      const ctx = myCanvas.getContext("2d");
+    <div class="card-container" id="cardContainer"></div>
 
-      const imgFondo = new Image();
-      const imgLogo = new Image();
-      const imgMemo = new Image();
-
-      imgFondo.src = "img/fondo.jpg";
-      imgLogo.src = "img/residentLogo.png";
-      imgMemo.src = "img/memoramaLogo.png";
-
-      imgFondo.onload = function () {
-        ctx.drawImage(imgFondo, 0, 0, 1280, 720);
-
-        imgLogo.onload = function () {
-          ctx.drawImage(imgLogo, 400, 200, 500, 200);
-        };
-
-        imgMemo.onload = function () {
-          ctx.drawImage(imgMemo, 550, 300, 180, 75);
-        };
-      };
-
-      function startFadeOut() {
-        const startAudio = document.getElementById("startAudio");
-        const secondAudio = document.getElementById("secondAudio");
-
-        startAudio.play();
-
-        startAudio.onended = function () {
-          secondAudio.play();
-          startTimer();
-        };
-
-        const fadeDuration = 2000;
-        const fadeSteps = 100;
-
-        let imgLogoOpacity = 1;
-        let imgMemoOpacity = 1;
-        let buttonOpacity = 1;
-
-        function fadeOutStep(step) {
-          ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
-
-          ctx.drawImage(imgFondo, 0, 0, 1280, 720);
-
-          ctx.globalAlpha = imgLogoOpacity;
-          ctx.drawImage(imgLogo, 400, 200, 500, 200);
-
-          ctx.globalAlpha = imgMemoOpacity;
-          ctx.drawImage(imgMemo, 550, 300, 180, 75);
-
-          ctx.globalAlpha = 1;
-
-          imgLogoOpacity -= 1 / fadeSteps;
-          imgMemoOpacity -= 1 / fadeSteps;
-          buttonOpacity -= 1 / fadeSteps;
-
-          document.getElementById("btnContainer").style.opacity = buttonOpacity;
-
-          if (step < fadeSteps) {
-            requestAnimationFrame(() => fadeOutStep(step + 1));
-          } else {
-            ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
-            ctx.drawImage(imgFondo, 0, 0, 1280, 720);
-          }
-        }
-
-        fadeOutStep(0);
-      }
-
-      function startTimer() {
-        const timerElement = document.getElementById("timer");
-        let totalTime = 90 * 1000;
-        let endTime = Date.now() + totalTime;
-        let thirtySecondsElapsed = false;
-
-        function updateTimer() {
-          let remainingTime = endTime - Date.now();
-
-          if (remainingTime <= 0) {
-            timerElement.innerHTML = "00:00:00";
-            clearInterval(timerInterval);
-            return;
-          }
-
-          if (remainingTime <= 30 * 1000 && !thirtySecondsElapsed) {
-            thirtySecondsElapsed = true;
-            stopSecondAudioAndPlayThird();
-          }
-
-          let minutes = Math.floor(remainingTime / (60 * 1000));
-          let seconds = Math.floor((remainingTime % (60 * 1000)) / 1000);
-          let milliseconds = Math.floor((remainingTime % 1000) / 10);
-
-          timerElement.innerHTML = `${String(minutes).padStart(
-            2,
-            "0"
-          )}:${String(seconds).padStart(2, "0")}:${String(
-            milliseconds
-          ).padStart(2, "0")}`;
-        }
-
-        updateTimer();
-        const timerInterval = setInterval(updateTimer, 10);
-      }
-
-      function stopSecondAudioAndPlayThird() {
-        const secondAudio = document.getElementById("secondAudio");
-        const thirdAudio = document.getElementById("thirdAudio");
-
-        secondAudio.pause();
-        secondAudio.currentTime = 0;
-
-        console.log("Reproduciendo");
-        thirdAudio.play();
-
-        thirdAudio.onerror = function () {
-          console.error("Error");
-        };
-      }
-    </script>
+    <script src="script.js"></script>
   </body>
 </html>
