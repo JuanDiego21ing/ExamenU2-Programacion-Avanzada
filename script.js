@@ -5,6 +5,24 @@ const imgFondo = new Image();
 const imgLogo = new Image();
 const imgMemo = new Image();
 
+const images = [
+  "img/1.png",
+  "img/2.png",
+  "img/3.png",
+  "img/4.jpeg",
+  "img/5.jpeg",
+  "img/6.jpeg",
+  "img/7.png",
+  "img/8.png",
+  "img/9.png",
+  "img/10.png",
+  "img/11.png",
+  "img/12.jpeg",
+  "img/13.jpeg",
+  "img/14.png",
+  "img/15.png",
+];
+
 imgFondo.src = "img/fondo.jpg";
 imgLogo.src = "img/residentLogo.png";
 imgMemo.src = "img/memoramaLogo.png";
@@ -19,12 +37,18 @@ const cardPairs = [...cardNumbers, ...cardNumbers];
 let flippedCards = [];
 
 function drawCells() {
+  const totalWidth = cols * cellSize;
+  const totalHeight = rows * cellSize;
+
+  const offsetX = (myCanvas.width - totalWidth) / 2 + 315;
+  const offsetY = (myCanvas.height - totalHeight) / 2;
+
   const positions = [];
 
   for (let i = 0; i < rows; i++) {
     for (let j = 0; j < cols; j++) {
-      const x = j * cellSize + 440;
-      const y = i * cellSize + 100;
+      const x = j * cellSize + offsetX;
+      const y = i * cellSize + offsetY;
       positions.push({ x, y });
     }
   }
@@ -41,16 +65,20 @@ function createCard(x, y, number) {
   card.style.left = `${x}px`;
   card.style.top = `${y}px`;
 
+  
   const front = document.createElement("div");
   front.classList.add("front");
 
   const back = document.createElement("div");
   back.classList.add("back");
-  back.textContent = number;
+
+  
+  back.style.backgroundImage = `url(${images[number - 1]})`; 
 
   card.appendChild(front);
   card.appendChild(back);
 
+  
   card.addEventListener("click", () => flipCard(card, number));
 
   document.getElementById("cardContainer").appendChild(card);
