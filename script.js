@@ -230,6 +230,34 @@ function startFadeOut() {
   fadeOutStep(0);
 }
 
+function cancelGame() {
+  ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+
+  const secondAudio = document.getElementById("secondAudio");
+  const thirdAudio = document.getElementById("thirdAudio");
+
+  if (secondAudio) secondAudio.pause();
+  if (thirdAudio) thirdAudio.pause();
+
+  const timerElement = document.getElementById("timer");
+  timerElement.innerHTML = "";
+  document.getElementById("cardContainer").innerHTML = "";
+
+  ctx.drawImage(imgFondo, 0, 0, 1280, 720);
+  ctx.drawImage(imgLogo, 400, 200, 500, 200);
+  ctx.drawImage(imgMemo, 550, 300, 180, 75);
+
+  const playButton = document.getElementById("playButton");
+  playButton.style.display = "block";
+  playButton.style.opacity = 1;
+  playButton.disabled = false;
+
+  clickedExtraImages = {
+    imgExtra1: false,
+    imgExtra2: false,
+  };
+}
+
 function gameOver() {
   const secondAudio = document.getElementById("secondAudio");
   const thirdAudio = document.getElementById("thirdAudio");
@@ -246,7 +274,7 @@ function gameOver() {
   if (restart) {
     restartGame();
   } else {
-    goToMainScreen();
+    location.reload();
   }
 }
 
