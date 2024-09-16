@@ -278,6 +278,37 @@ function gameOver() {
   }
 }
 
+function checkMatch() {
+  const [first, second] = flippedCards;
+
+  if (first.number === second.number) {
+    first.card.removeEventListener("click", () =>
+      flipCard(first.card, first.number)
+    );
+    second.card.removeEventListener("click", () =>
+      flipCard(second.card, second.number)
+    );
+
+    if (document.querySelectorAll(".card:not(.flipped)").length === 0) {
+      const secondAudio = document.getElementById("secondAudio");
+      const thirdAudio = document.getElementById("thirdAudio");
+
+      if (secondAudio) secondAudio.pause();
+      if (thirdAudio) thirdAudio.pause();
+
+      setTimeout(() => {
+        alert("¡Felicidades, ganaste!");
+        location.reload();
+      }, 500);
+    }
+  } else {
+    first.card.classList.remove("flipped");
+    second.card.classList.remove("flipped");
+  }
+
+  flippedCards = [];
+}
+
 function restartGame() {
   ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
   document.getElementById("cardContainer").innerHTML = "";
