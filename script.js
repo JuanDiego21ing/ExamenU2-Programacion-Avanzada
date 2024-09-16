@@ -4,21 +4,23 @@ const ctx = myCanvas.getContext("2d");
 const imgFondo = new Image();
 const imgLogo = new Image();
 const imgMemo = new Image();
+const imgExtra1 = new Image();
+const imgExtra2 = new Image();
 
 const images = [
   "img/1.png",
   "img/2.png",
   "img/3.png",
-  "img/4.jpeg",
-  "img/5.jpeg",
-  "img/6.jpeg",
+  "img/4.png",
+  "img/5.png",
+  "img/6.png",
   "img/7.png",
   "img/8.png",
   "img/9.png",
   "img/10.png",
   "img/11.png",
-  "img/12.jpeg",
-  "img/13.jpeg",
+  "img/12.png",
+  "img/13.png",
   "img/14.png",
   "img/15.png",
 ];
@@ -26,6 +28,8 @@ const images = [
 imgFondo.src = "img/fondo.jpg";
 imgLogo.src = "img/residentLogo.png";
 imgMemo.src = "img/memoramaLogo.png";
+imgExtra1.src = "img/verde.jpg";
+imgExtra2.src = "img/roja.jpeg";
 
 const cellSize = 140;
 const rows = 5;
@@ -35,6 +39,13 @@ const cardNumbers = Array.from({ length: (rows * cols) / 2 }, (_, i) => i + 1);
 const cardPairs = [...cardNumbers, ...cardNumbers];
 
 let flippedCards = [];
+let totalTime = 125 * 1000;
+let endTime = Date.now() + totalTime;
+
+let clickedExtraImages = {
+  imgExtra1: false,
+  imgExtra2: false,
+};
 
 function drawCells() {
   const totalWidth = cols * cellSize;
@@ -57,6 +68,11 @@ function drawCells() {
     const { x, y } = positions[index];
     createCard(x, y, number);
   });
+
+  ctx.drawImage(imgExtra1, 50, 50, 150, 75);
+  ctx.drawImage(imgExtra2, 50, 150, 150, 75);
+
+  myCanvas.addEventListener("click", handleCanvasClick);
 }
 
 function createCard(x, y, number) {
@@ -65,20 +81,17 @@ function createCard(x, y, number) {
   card.style.left = `${x}px`;
   card.style.top = `${y}px`;
 
-  
   const front = document.createElement("div");
   front.classList.add("front");
 
   const back = document.createElement("div");
   back.classList.add("back");
 
-  
-  back.style.backgroundImage = `url(${images[number - 1]})`; 
+  back.style.backgroundImage = `url(${images[number - 1]})`;
 
   card.appendChild(front);
   card.appendChild(back);
 
-  
   card.addEventListener("click", () => flipCard(card, number));
 
   document.getElementById("cardContainer").appendChild(card);
@@ -125,7 +138,7 @@ let imagesLoaded = 0;
 
 function checkImagesLoaded() {
   imagesLoaded++;
-  if (imagesLoaded === 3) {
+  if (imagesLoaded === 5) {
     ctx.drawImage(imgFondo, 0, 0, 1280, 720);
     ctx.drawImage(imgLogo, 400, 200, 500, 200);
     ctx.drawImage(imgMemo, 550, 300, 180, 75);
@@ -135,6 +148,8 @@ function checkImagesLoaded() {
 imgFondo.onload = checkImagesLoaded;
 imgLogo.onload = checkImagesLoaded;
 imgMemo.onload = checkImagesLoaded;
+imgExtra1.onload = checkImagesLoaded;
+imgExtra2.onload = checkImagesLoaded;
 
 imgFondo.onerror = function () {
   console.error("Error al cargar la imagen del fondo");
@@ -146,6 +161,14 @@ imgLogo.onerror = function () {
 
 imgMemo.onerror = function () {
   console.error("Error al cargar la imagen de memorama");
+};
+
+imgExtra1.onerror = function () {
+  console.error("Error al cargar la primera imagen extra");
+};
+
+imgExtra2.onerror = function () {
+  console.error("Error al cargar la segunda imagen extra");
 };
 
 document.getElementById("playButton").addEventListener("click", function () {
@@ -202,8 +225,6 @@ function startFadeOut() {
 
 function startTimer() {
   const timerElement = document.getElementById("timer");
-  let totalTime = 90 * 1000;
-  let endTime = Date.now() + totalTime;
   let thirtySecondsElapsed = false;
 
   function updateTimer() {
@@ -223,9 +244,9 @@ function startTimer() {
         "0 0 10px #ff0000, 0 0 20px #ff0000, 0 0 30px #ff0000";
     }
 
-    let minutes = Math.floor(remainingTime / (60 * 1000));
-    let seconds = Math.floor((remainingTime % (60 * 1000)) / 1000);
-    let milliseconds = Math.floor((remainingTime % 1000) / 10);
+    const minutes = Math.floor(remainingTime / (60 * 1000));
+    const seconds = Math.floor((remainingTime % (60 * 1000)) / 1000);
+    const milliseconds = Math.floor((remainingTime % 1000) / 10);
 
     timerElement.innerHTML = `${String(minutes).padStart(2, "0")}:${String(
       seconds
@@ -234,18 +255,50 @@ function startTimer() {
 
   updateTimer();
   const timerInterval = setInterval(updateTimer, 10);
+
+  function stopSecondAudioAndPlayThird() {
+    const secondAudio = document.getElementById("secondAudio");
+    const thirdAudio = document.getElementById("thirdAudio");
+
+    secondAudio.pause();
+    thirdAudio.play();
+  }
 }
 
-function stopSecondAudioAndPlayThird() {
-  const secondAudio = document.getElementById("secondAudio");
-  const thirdAudio = document.getElementById("thirdAudio");
+function addTimeToTimer(seconds) {
+  endTime += seconds * 1000;
+}
 
-  secondAudio.pause();
-  secondAudio.currentTime = 0;
+function handleCanvasClick(event) {
+  const rect = myCanvas.getBoundingClientRect();
+  const x = event.clientX - rect.left;
+  const y = event.clientY - rect.top;
 
-  thirdAudio.play();
+  if (
+    x >= 50 &&
+    x <= 200 &&
+    y >= 50 &&
+    y <= 125 &&
+    !clickedExtraImages.imgExtra1
+  ) {
+    clickedExtraImages.imgExtra1 = true;
+    ctx.clearRect(50, 50, 150, 75);
+    addTimeToTimer(15);
+  }
 
-  thirdAudio.onerror = function () {
-    console.error("Error");
-  };
+  if (
+    x >= 50 &&
+    x <= 200 &&
+    y >= 150 &&
+    y <= 225 &&
+    !clickedExtraImages.imgExtra2
+  ) {
+    clickedExtraImages.imgExtra2 = true;
+    ctx.clearRect(50, 150, 150, 75);
+    addTimeToTimer(15);
+  }
+
+  if (clickedExtraImages.imgExtra1 && clickedExtraImages.imgExtra2) {
+    myCanvas.removeEventListener("click", handleCanvasClick);
+  }
 }
