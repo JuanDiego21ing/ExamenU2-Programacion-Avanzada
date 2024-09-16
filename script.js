@@ -230,6 +230,64 @@ function startFadeOut() {
   fadeOutStep(0);
 }
 
+function gameOver() {
+  const secondAudio = document.getElementById("secondAudio");
+  const thirdAudio = document.getElementById("thirdAudio");
+
+  if (!secondAudio.paused) {
+    secondAudio.pause();
+  }
+
+  if (!thirdAudio.paused) {
+    thirdAudio.pause();
+  }
+
+  const restart = confirm("¡Haz perdido! ¿Quieres jugar otra vez?");
+  if (restart) {
+    restartGame();
+  } else {
+    goToMainScreen();
+  }
+}
+
+function restartGame() {
+  ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+  document.getElementById("cardContainer").innerHTML = "";
+
+  endTime = Date.now() + totalTime;
+  const timerElement = document.getElementById("timer");
+  timerElement.style.color = "#00ff00";
+  timerElement.style.textShadow = "";
+
+  const secondAudio = document.getElementById("secondAudio");
+  secondAudio.currentTime = 0;
+  secondAudio.play();
+
+  ctx.drawImage(imgFondo, 0, 0, 1280, 720);
+  drawCells();
+
+  startTimer();
+
+  clickedExtraImages = [];
+  setupExtraImages();
+}
+
+function goToMainScreen() {
+  ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+
+  ctx.drawImage(imgFondo, 0, 0, 1280, 720);
+  ctx.drawImage(imgLogo, 400, 200, 500, 200);
+  ctx.drawImage(imgMemo, 550, 300, 180, 75);
+
+  const secondAudio = document.getElementById("secondAudio");
+  secondAudio.pause();
+
+  const thirdAudio = document.getElementById("thirdAudio");
+  thirdAudio.pause();
+
+  document.getElementById("playButton").style.display = "block";
+}
+
 function startTimer() {
   const timerElement = document.getElementById("timer");
   let thirtySecondsElapsed = false;
@@ -240,6 +298,7 @@ function startTimer() {
     if (remainingTime <= 0) {
       timerElement.innerHTML = "00:00:00";
       clearInterval(timerInterval);
+      gameOver();
       return;
     }
 
@@ -272,6 +331,25 @@ function startTimer() {
   }
 }
 
+function handleExtraImageClick() {
+  endTime += 15 * 1000;
+
+  clickedExtraImages.push(this);
+}
+
+function setupExtraImages() {
+  const extraImages = document.querySelectorAll(".extra-image");
+  extraImages.forEach((image) => {
+    image.addEventListener("click", handleExtraImageClick);
+  });
+}
+
+function initializeGame() {
+  setupExtraImages();
+  goToMainScreen();
+}
+
+document.addEventListener("DOMContentLoaded", initializeGame);
 function addTimeToTimer(seconds) {
   endTime += seconds * 1000;
 }
