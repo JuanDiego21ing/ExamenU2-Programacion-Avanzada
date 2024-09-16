@@ -7,6 +7,11 @@ const imgMemo = new Image();
 const imgExtra1 = new Image();
 const imgExtra2 = new Image();
 
+const audioExtra1 = new Audio("sounds/CursorSelect.mp3");
+const audioExtra2 = new Audio("sounds/CursorSelect.mp3");
+
+const audioCardClick = new Audio("sounds/cardFlip.mp3");
+
 const images = [
   "img/1.png",
   "img/2.png",
@@ -101,6 +106,8 @@ function flipCard(card, number) {
   if (flippedCards.length < 2 && !card.classList.contains("flipped")) {
     card.classList.add("flipped");
     flippedCards.push({ card, number });
+
+    audioCardClick.play();
 
     if (flippedCards.length === 2) {
       setTimeout(checkMatch, 1000);
@@ -282,7 +289,9 @@ function handleCanvasClick(event) {
     !clickedExtraImages.imgExtra1
   ) {
     clickedExtraImages.imgExtra1 = true;
-    ctx.clearRect(50, 50, 150, 75);
+    audioExtra1.play();
+
+    ctx.drawImage(imgFondo, 50, 50, 150, 75, 50, 50, 150, 75);
     addTimeToTimer(15);
   }
 
@@ -294,7 +303,9 @@ function handleCanvasClick(event) {
     !clickedExtraImages.imgExtra2
   ) {
     clickedExtraImages.imgExtra2 = true;
-    ctx.clearRect(50, 150, 150, 75);
+    audioExtra2.play();
+
+    ctx.drawImage(imgFondo, 50, 150, 150, 75, 50, 150, 150, 75);
     addTimeToTimer(15);
   }
 
